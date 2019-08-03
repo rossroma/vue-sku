@@ -8,7 +8,7 @@
 ![实战DEMO](./imgs/demo-2.png)
 
 ### demo
-[jsfiddle.net/rossroma/w07whp5b/](https://jsfiddle.net/rossroma/w07whp5b/)
+[http://www.opnnn.com/sku2](https://jsfiddle.net/rossroma/w07whp5b/)
 
 # start
 ```
