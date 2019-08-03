@@ -28,8 +28,8 @@
 
     <!-- 规格展示 -->
     <div class="example">
-      <h4 class="title">规格展示</h4>
-      <table class="stock-table">
+      <h4 class="title">规格展示<el-button type="primary" @click="specificationStatus = !specificationStatus" size="mini">{{ !specificationStatus ? '显示' : '隐藏' }}</el-button></h4>
+      <table class="stock-table" v-if="specificationStatus">
         <thead>
           <tr>
             <th v-for="(item, index) in specification" :key="index">{{item.name}}</th>
@@ -139,7 +139,11 @@
 
     <div class="example">
       <h4 class="title">数据格式</h4>
-      <textarea class="code-area" :value="JSON.stringify(childProductArray)"></textarea>
+      <div class="code-area">
+        <div v-for="(item, index) in childProductArray" :key="index">
+          {{ item }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -203,6 +207,13 @@ export default {
   data () {
     return {
       // 规格
+      specificationStatus: false, // 显示规格列表
+      /*
+      *       {
+          name: '颜色',
+          value: ['黑色', '白色', '蓝色']
+        }
+      * */
       specification: [
         {
           name: '颜色',
@@ -210,6 +221,35 @@ export default {
         }
       ],
       // 子规格
+      /*
+      * {
+          childProductId: 0,
+          childProductSpec: {'颜色': '黑色'},
+          childProductNo: 'PRODUCTNO_0',
+          childProductStock: 0,
+          childProductPrice: 0,
+          childProductCost: 0,
+          isUse: true
+        },
+        {
+          childProductId: 0,
+          childProductSpec: {'颜色': '白色'},
+          childProductNo: 'PRODUCTNO_1',
+          childProductStock: 0,
+          childProductPrice: 0,
+          childProductCost: 0,
+          isUse: true
+        },
+        {
+          childProductId: 0,
+          childProductSpec: {'颜色': '蓝色'},
+          childProductNo: 'PRODUCTNO_2',
+          childProductStock: 0,
+          childProductPrice: 0,
+          childProductCost: 0,
+          isUse: true
+        }
+      * */
       childProductArray: [
         {
           childProductId: 0,
@@ -527,8 +567,8 @@ export default {
   .example {
     margin-top: 50px;
     .code-area {
-      width: 740px;
-      height: 300px;
+      width: 100%;
+      min-height: 300px;
       box-sizing: border-box;
       padding: 20px;
       border: 2px dashed #c00;
