@@ -1,16 +1,14 @@
 <template>
   <div id="app">
-    <sku-wrap />
+    <router-view />
   </div>
 </template>
 
 <script>
-import SkuWrap from './components/sku.vue'
 
 export default {
   name: 'app',
   components: {
-    SkuWrap
   }
 }
 </script>

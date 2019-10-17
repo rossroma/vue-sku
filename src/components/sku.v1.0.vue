@@ -1,56 +1,56 @@
 <template>
-  <div class="vue-sku">
+  <div id="app">
+
     <!-- 规格设置 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span>产品规格设置</span>
+    <div class="specification">
+      <div class="title">产品规格设置</div>
+      <ul class="spec-list">
+        <li class="item" v-for="(item, index) in specification" :key="index">
+          <div class="name">
+            <el-input size="small" v-model="item.name" placeholder="输入产品规格"></el-input>
+            <i class="icon el-icon-circle-close" @click="delSpec(index)"></i>
+          </div>
+          <div class="values">
+            <span class="el-tag" v-for="(tag, num) in item.value" :key="tag">
+              <span class="el-select__tags-text">{{tag}}</span>
+              <i class="el-tag__close el-icon-close" @click="delSpecTag(index, num)"></i>
+            </span>
+            <div class="add-attr">
+              <el-input size="small" v-model="addValues[index]" placeholder="多个产品属性以空格隔开" icon="plus" @click="addSpecTag(index)" @keyup.native.enter="addSpecTag(index)"></el-input>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="add-spec">
+        <el-button size="small" type="info" :disabled="specification.length >= 5" @click="addSpec">添加规格项目</el-button>
       </div>
-      <section>
-        <div v-for="(item, index) in specification" :key="index" class="spec-line">
-          <div>
-            <span v-if="!cacheSpecification[index].status">{{ item.name }}</span>
-            <el-input size="small" style="width:200px;" v-if="cacheSpecification[index].status" v-model="cacheSpecification[index].name" placeholder="输入产品规格" @keyup.native.enter="saveSpec(index)">
-              <el-button slot="append" icon="el-icon-check" type="primary" @click="saveSpec(index)"></el-button>
-            </el-input>
-            <i class="icon el-icon-edit" v-if="!cacheSpecification[index].status" @click="updateSpec(index)"></i>
-          </div>
-          <div>
-            <el-tag v-for="(tag, j) in item.value" :key="j" closable  @close="delSpecTag(index, j)">{{ tag }}</el-tag>
-            <el-input size="small" style="width:200px;" v-model="addValues[index]" placeholder="多个产品属性以空格隔开" @keyup.native.enter="addSpecTag(index)">
-              <el-button slot="append" icon="el-icon-check" type="primary" @click="addSpecTag(index)"></el-button>
-            </el-input>
-          </div>
-          <i class="icon el-icon-circle-close spec-deleted" @click="delSpec(index)"></i>
-          <el-divider></el-divider>
-        </div>
-        <div class="add-spec">
-          <el-button size="small" type="primary" :disabled="specification.length >= 5" @click="addSpec">添加规格项目</el-button>
-        </div>
-      </section>
-    </el-card>
+    </div>
 
     <!-- 规格展示 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span>规格展示</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="specificationStatus = !specificationStatus">{{ !specificationStatus ? '显示' : '隐藏' }}</el-button>
-      </div>
-      <section v-if="specificationStatus">
-        <el-row>
-          <el-col :span="2" v-for="(item, index) in specification" :key="index" class="text item bold">{{ item.name }}</el-col>
-        </el-row>
-        <el-row v-for="(item, index) in countSum(0)" :key="index">
-          <el-col :span="2" class="text item" v-for="(n, specIndex) in specification.length" :key="n">{{getSpecAttr(specIndex, index)}}</el-col>
-        </el-row>
-      </section>
-    </el-card>
+    <div class="example">
+      <h4 class="title">规格展示<el-button type="primary" @click="specificationStatus = !specificationStatus" size="mini">{{ !specificationStatus ? '显示' : '隐藏' }}</el-button></h4>
+      <table class="stock-table" v-if="specificationStatus">
+        <thead>
+        <tr>
+          <th v-for="(item, index) in specification" :key="index">{{item.name}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(item, index) in countSum(0)" :key="index">
+          <td
+            v-for="(n, specIndex) in specification.length"
+            :key="n">
+            {{getSpecAttr(specIndex, index)}}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- 实战DEMO -->
-    <el-card>
-      <div slot="header" class="clearfix">
-        <span>规格表格</span>
-      </div>
-      <table class="el-table" cellspacing="0" cellpadding="0">
+    <div class="example">
+      <h4 class="title">实战DEMO</h4>
+      <table class="stock-table" cellspacing="0" cellpadding="0">
         <thead>
         <tr>
           <th
@@ -69,13 +69,14 @@
         <tr
           :key="index"
           v-for="(item, index) in countSum(0)">
-          <td
-            v-for="(n, specIndex) in specification.length"
-            v-if="showTd(specIndex, index)"
-            :key="n"
-            :rowspan="countSum(n)">
-            {{getSpecAttr(specIndex, index)}}
-          </td>
+          <template v-for="(n, specIndex) in specification.length">
+            <td
+              v-if="showTd(specIndex, index)"
+              :key="n"
+              :rowspan="countSum(n)">
+              {{getSpecAttr(specIndex, index)}}
+            </td>
+          </template>
           <td>
             <el-input
               size="small"
@@ -120,35 +121,31 @@
         <tr>
           <td colspan="8" class="wh-foot">
             <span class="label">批量设置：</span>
-            <template v-if="isSetListShow">
-              <el-button @click="openBatch('childProductCost')" size="mini">成本价</el-button>
-              <el-button @click="openBatch('childProductStock')" size="mini">库存</el-button>
-              <el-button @click="openBatch('childProductPrice')" size="mini">销售价</el-button>
-            </template>
-            <template v-else>
-              <el-input size="mini" style="width:200px;" v-model.number="batchValue" placeholder="输入要设置的数量"></el-input>
-              <el-button type="primary" size="mini" @click="setBatch"><i class="set-btn blue el-icon-check"></i></el-button>
-              <el-button type="danger" size="mini" @click="cancelBatch"><i class="set-btn blue el-icon-close"></i></el-button>
-            </template>
+            <ul class="set-list" v-if="isSetListShow">
+              <li class="set-item" @click="openBatch('childProductCost')">成本价</li>
+              <li class="set-item" @click="openBatch('childProductStock')">库存</li>
+              <li class="set-item" @click="openBatch('childProductPrice')">销售价</li>
+            </ul>
+            <div class="set-form" v-else>
+              <el-input size="mini" v-model.number="batchValue" placeholder="输入要设置的数量"></el-input>
+              <i class="set-btn blue el-icon-check" @click="setBatch"></i>
+              <i class="set-btn red el-icon-close" @click="cancelBatch"></i>
+            </div>
           </td>
         </tr>
         </tbody>
 
       </table>
-    </el-card>
+    </div>
 
-    <!-- 数据格式 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span>数据格式</span>
-      </div>
-      <section>
+    <div class="example">
+      <h4 class="title">数据格式</h4>
+      <div class="code-area">
         <div v-for="(item, index) in childProductArray" :key="index">
           {{ item }}
-          <el-divider></el-divider>
         </div>
-      </section>
-    </el-card>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -210,11 +207,79 @@
 
     data () {
       return {
-        specificationStatus: false, // 显示规格列表
         // 规格
-        specification: [],
+        specificationStatus: false, // 显示规格列表
+        /*
+        *       {
+            name: '颜色',
+            value: ['黑色', '白色', '蓝色']
+          }
+        * */
+        specification: [
+          {
+            name: '颜色',
+            value: ['黑色', '白色', '蓝色']
+          }
+        ],
         // 子规格
-        childProductArray: [],
+        /*
+        * {
+            childProductId: 0,
+            childProductSpec: {'颜色': '黑色'},
+            childProductNo: 'PRODUCTNO_0',
+            childProductStock: 0,
+            childProductPrice: 0,
+            childProductCost: 0,
+            isUse: true
+          },
+          {
+            childProductId: 0,
+            childProductSpec: {'颜色': '白色'},
+            childProductNo: 'PRODUCTNO_1',
+            childProductStock: 0,
+            childProductPrice: 0,
+            childProductCost: 0,
+            isUse: true
+          },
+          {
+            childProductId: 0,
+            childProductSpec: {'颜色': '蓝色'},
+            childProductNo: 'PRODUCTNO_2',
+            childProductStock: 0,
+            childProductPrice: 0,
+            childProductCost: 0,
+            isUse: true
+          }
+        * */
+        childProductArray: [
+          {
+            childProductId: 0,
+            childProductSpec: {'颜色': '黑色'},
+            childProductNo: 'PRODUCTNO_0',
+            childProductStock: 0,
+            childProductPrice: 0,
+            childProductCost: 0,
+            isUse: true
+          },
+          {
+            childProductId: 0,
+            childProductSpec: {'颜色': '白色'},
+            childProductNo: 'PRODUCTNO_1',
+            childProductStock: 0,
+            childProductPrice: 0,
+            childProductCost: 0,
+            isUse: true
+          },
+          {
+            childProductId: 0,
+            childProductSpec: {'颜色': '蓝色'},
+            childProductNo: 'PRODUCTNO_2',
+            childProductStock: 0,
+            childProductPrice: 0,
+            childProductCost: 0,
+            isUse: true
+          }
+        ],
         // 用来存储要添加的规格属性
         addValues: [],
         // 默认商品编号
@@ -222,8 +287,7 @@
         // 批量设置相关
         isSetListShow: true,
         batchValue: '', // 批量设置所绑定的值
-        currentType: '', // 要批量设置的类型
-        cacheSpecification: [] // 缓存规格名称
+        currentType: '' // 要批量设置的类型
       }
     },
 
@@ -233,91 +297,29 @@
         return this.childProductArray.map(item => item.childProductSpec)
       }
     },
-    created() {
-      this.createData()
-    },
+
     methods: {
-      // 创建模拟数据
-      createData() {
-        const arr = ['颜色', '尺寸']
-        const arr2 = ['黑色 白色 蓝色', 's m xl']
-        for (let i = 0; i < 2; i++) {
-          // 添加数据
-          this.addSpec()
-          // 数据
-          this.specification[i].name = arr[i]
-          this.addValues[i] = arr2[i]
-          // 缓存按钮键值
-          this.cacheSpecification[i].status = false
-          this.cacheSpecification[i].name = arr[i]
-          // 构建
-          this.addSpecTag(i)
-        }
-      },
       // 添加规格项目
       addSpec () {
         if (this.specification.length < 5) {
-          this.cacheSpecification.push({
-            status: true,
-            name: ''
-          })
           this.specification.push({
             name: '',
             value: []
           })
-          console.log(this.cacheSpecification)
         }
       },
-      // 修改状态
-      updateSpec(index) {
-        this.cacheSpecification[index].status = true
-        this.cacheSpecification[index].name = this.specification[index].name
-      },
-      // 保存规格名
-      saveSpec(index) {
-        if (!this.cacheSpecification[index].name.trim()) {
-          this.$message.error('名称不能为空，请注意修改')
-          return
-        }
-        // 保存需要验证名称是否重复
-        if (this.specification[index].name === this.cacheSpecification[index].name) {
-          this.cacheSpecification[index].status = false
-        } else {
 
-          if (this.verifyRepeat(index)) {
-            // 如果有重复的，禁止修改
-            this.$message.error('名称重复，请注意修改')
-          } else {
-            this.specification[index].name = this.cacheSpecification[index].name
-            this.cacheSpecification[index].status = false
-          }
-        }
-      },
       // 删除规格项目
       delSpec (index) {
         this.specification.splice(index, 1)
 
         this.handleSpecChange('del')
       },
-      verifyRepeat(index) {
-        let flag = false
-        this.specification.forEach((value, j) => {
-          // 检查除了当前选项以外的值是否和新的值想等，如果相等，则禁止修改
-          if (index !== j) {
-            if (this.specification[j].name === this.cacheSpecification[index].name) {
-              flag = true
-            }
-          }
-        })
-        return flag
-      },
+
       // 添加规格属性
       addSpecTag (index) {
         let str = this.addValues[index] || ''
-        if (!str.trim() || !this.cacheSpecification[index].name.trim()) {
-          this.$message.error('名称不能为空，请注意修改')
-          return
-        } // 判空
+        if (!str.trim()) return // 判空
         str = str.trim()
         let arr = str.split(/\s+/) // 使用空格分割成数组
 
@@ -328,8 +330,6 @@
         this.clearAddValues(index)
 
         this.handleSpecChange('add')
-        this.specification[index].name = this.cacheSpecification[index].name
-        this.cacheSpecification[index].status = false
       },
 
       // 删除规格属性
@@ -473,7 +473,7 @@
       },
 
       // 监听商品编号的blur事件
-      handleNo (index, attr) {
+      handleNo (index) {
         // 1.当用户输入完商品编号时，判断是否重复，如有重复，则提示客户并自动修改为不重复的商品编号
         const value = this.childProductArray[index].childProductNo
         let isRepet
@@ -540,7 +540,6 @@
 
       // 取消批量设置
       cancelBatch () {
-        console.log('取消批量设置')
         this.batchValue = ''
         this.currentType = ''
         this.isSetListShow = true
@@ -549,13 +548,160 @@
   }
 </script>
 
-<style lang="scss" scoped>
-.vue-sku{
-  .spec-line{position:relative;
-    .spec-deleted{position:absolute;right:0;top:0;display: none;cursor: pointer;}
-    &:hover{
-      .spec-deleted{display: inline;}
+<style lang="scss">
+  * {
+    list-style: none;
+    padding: 0;
+    border: 0;
+  }
+  #app {
+    .title {
+      padding: 0 12px;
+      line-height: 1;
+      font-size: 18px;
+      border-left: 4px solid #50bfff;
+      color: #666;
+      margin: 0 0 16px 0;
+      font-weight: 400;
+    }
+    .example {
+      margin-top: 50px;
+      .code-area {
+        width: 100%;
+        min-height: 300px;
+        box-sizing: border-box;
+        padding: 20px;
+        border: 2px dashed #c00;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+    }
+    .specification {
+      display: inline-block;
+      vertical-align: top;
+      width: 480px;
+      .spec-list {
+        background-color: #fff;
+        border: 1px solid #d8d8d8;
+        padding: 10px;
+        .item {
+          margin-top: 5px;
+          &:first-child {
+            margin-top: 0;
+          }
+          .name {
+            background: #f3f6fb;
+            padding: 2px 8px;
+            text-align: right;
+            overflow: hidden;
+            .el-input {
+              float: left;
+              width: 150px;
+            }
+            .icon {
+              display: none;
+              color: #929292;
+              cursor: pointer;
+              &:hover {
+                color: #880000;
+              }
+            }
+            &:hover {
+              .icon {
+                display: inline-block;
+              }
+            }
+          }
+          .values {
+            .el-tag {
+              margin: 8px 0 0 8px;
+            }
+            .add-attr {
+              display: inline-block;
+              vertical-align: top;
+              margin-top: 4px;
+              .el-input {
+                width: 200px;
+                margin: 2px 0 0 4px;
+              }
+            }
+          }
+        }
+        .add-spec {
+          font-size: 13px;
+        }
+      }
+    }
+    .stock-table {
+      width: 740px;
+      padding: 0;
+      border-collapse: separate;
+      border-color: #dfe6ec;
+      border-style: solid;
+      border-width: 1px 0 0 1px;
+      background-color: #fff;
+      td,
+      th {
+        padding: 4px 10px;
+        border-bottom: 1px solid #dfe6ec;
+        border-right: 1px solid #dfe6ec;
+      }
+      th {
+        line-height: 30px;
+        background-color: #eef1f6;
+      }
+      .link {
+        cursor: pointer;
+        color: #0088ee;
+        font-size: 13px;
+        margin-left: 6px;
+      }
+      .wh-foot {
+        line-height: 30px;
+        .label {
+          display: inline-block;
+          vertical-align: top;
+        }
+        .set-list {
+          display: inline-block;
+          vertical-align: top;
+          font-size: 0;
+          .set-item {
+            display: inline-block;
+            vertical-align: top;
+            margin-left: 15px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #0088ee;
+          }
+        }
+        .set-form {
+          display: inline-block;
+          margin-left: 10px;
+          .el-input {
+            display: inline-block;
+            width: 120px;
+          }
+          .set-btn {
+            display: inline-block;
+            padding: 0 2px;
+            font-size: 15px;
+            cursor: pointer;
+            &.blue {
+              color: #0088ee;
+            }
+            &.red {
+              color: #cc0000;
+            }
+          }
+        }
+        .right {
+          float: right;
+        }
+        .text {
+          font-size: 13px;
+        }
+      }
     }
   }
-}
 </style>
