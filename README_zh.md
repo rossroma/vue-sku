@@ -13,7 +13,12 @@
 ```
 访问：[http://localhost:8080](http://www.opnnn.com/sku2/index2?version=git)
 
-#####
+##### 功能优化
+
+* 优化当sku过多时耗时问题
+* 优化规格匹配
+
+##### 文档添加
 
 * 添加了英语文档
 

@@ -39,7 +39,7 @@
         <el-row>
           <el-col :span="2" v-for="(item, index) in specification" :key="index" class="text item bold">{{ item.name }}</el-col>
         </el-row>
-        <el-row v-for="(item, index) in countSum(0)" :key="index">
+        <el-row v-for="(item, index) in SKUNums" :key="index">
           <el-col :span="2" class="text item" v-for="(n, specIndex) in specification.length" :key="n">{{getSpecAttr(specIndex, index)}}</el-col>
         </el-row>
       </section>
@@ -68,7 +68,7 @@
         <tbody v-if="specification[0] && specification[0].value.length">
         <tr
           :key="index"
-          v-for="(item, index) in countSum(0)">
+          v-for="(item, index) in SKUNums">
           <template v-for="(n, specIndex) in specification.length">
             <td
               v-if="showTd(specIndex, index)"
@@ -232,6 +232,17 @@
       // All skus' id
       stockSpecArr () {
         return this.childProductArray.map(item => item.childProductSpec)
+      },
+
+      // SKU numbers
+      SKUNums () {
+        let num = 1
+        this.specification.forEach((item, index) => {
+          if (index >= 0 && item.value && item.value.length) {
+            num *= item.value.length
+          }
+        })
+        return num
       }
     },
     created() {
@@ -412,7 +423,7 @@
           this.childProductArray = []
         }
 
-        for (let i = 0; i < this.countSum(0); i++) {
+        for (let i = 0; i < this.SKUNums; i++) {
           this.changeStock(option, i, stockCopy)
         }
       },
@@ -424,6 +435,35 @@
        * @return {[type]}           [description]
        */
       changeStock (option, index, stockCopy) {
+        const spec = this.getChildProductSpec(index)
+        if (option === 'add') {
+          // If the id does not exist, the description is a new attribute, and a data is added to the child Array
+          let len = this.stockSpecArr.length
+          if (len) {
+            for (let i = 0; i < len; i++) {
+              if (!objEquals(spec, this.stockSpecArr[i])) {
+                this.$set(this.childProductArray, index, this.creatChildProduct(index))
+                return
+              }
+            }
+          } else {
+            this.$set(this.childProductArray, index, this.creatChildProduct(index))
+          }
+        } else if (option === 'del') {
+          // Because it's a delete operation, in theory, all the data can be obtained from stockCopy.
+          let origin = ''
+          let len = stockCopy.length
+          for (let i = 0; i < len; i++) {
+            if (objEquals(spec, stockCopy[i].childProductSpec)) {
+              origin = stockCopy[i].childProductSpec
+            }
+          }
+          this.childProductArray.push(origin || this.creatChildProduct(index))
+        }
+      },
+
+      // 生成一个新的规格
+      creatChildProduct (index) {
         let childProduct = {
           childProductId: 0,
           childProductSpec: this.getChildProductSpec(index),
@@ -433,24 +473,7 @@
           childProductCost: 0,
           isUse: true
         }
-
-        const spec = childProduct.childProductSpec
-        if (option === 'add') {
-          // If the id does not exist, the description is a new attribute, and a data is added to the child Array
-          if (this.stockSpecArr.findIndex((item) => objEquals(spec, item)) === -1) {
-            this.$set(this.childProductArray, index, childProduct)
-          }
-        } else if (option === 'del') {
-          // Because it's a delete operation, in theory, all the data can be obtained from stockCopy.
-          let origin = ''
-          stockCopy.forEach(item => {
-            if (objEquals(spec, item.childProductSpec)) {
-              origin = item
-              return false
-            }
-          })
-          this.childProductArray.push(origin || childProduct)
-        }
+        return childProduct
       },
 
       // Gets the childProductSpec property of the childProductArray.
