@@ -207,7 +207,7 @@
   }
 
   export default {
-    name: 'app',
+    name: 'sku.v1.1',
 
     data () {
       return {
@@ -229,7 +229,7 @@
     },
 
     computed: {
-      // All sku's id
+      // All skus' id
       stockSpecArr () {
         return this.childProductArray.map(item => item.childProductSpec)
       }
