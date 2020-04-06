@@ -1,32 +1,35 @@
 # vue-sku
-Base on vuejs，a product sku component.
+基于vuejs，生成一个商品sku展示组件，
 
-[version 1.0](http://www.opnnn.com/sku2?version=git)
+[预览1.0](http://www.opnnn.com/sku2?version=git)
+初始版本的文件。
 
-[version 1.1](http://www.opnnn.com/sku2/index2?version=git)
+[预览1.1](http://www.opnnn.com/sku2/index2?version=git)
 
 # start
 ```
   npm install
   npm run serve
 ```
-visit：[http://localhost:8080](http://www.opnnn.com/sku2/index2?version=git)
+访问：[http://localhost:8080](http://www.opnnn.com/sku2/index2?version=git)
 
-##### Update
-* Optimize the time consumption problem when there are too many SKUs
-* Optimize specification matching
+#### 增加了对应的 sku 选择器 [点此查看](http://www.opnnn.com/sku3?version=git)
 
-##### Update
-* Add English DOC
+##### 功能优化
 
-##### Update 1.1.1
+* 优化当sku过多时耗时问题
+* 优化规格匹配
 
-* Add route
-* Add version preview
-* Create component
+##### 文档添加
 
-##### Version 1.1
-* Add specification name validation duplicate and null
-* Update UI
+* 添加了英语文档
 
-#####  Initialise version。
+##### 结构更新
+
+* 添加了路由
+* 添加了对应的版本预览
+* 当前版本更改为组件
+
+##### 1.1
+* 新增添加规格名称验证重复和空值
+* 更新UI
