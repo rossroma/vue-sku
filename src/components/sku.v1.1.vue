@@ -455,7 +455,7 @@
           let len = stockCopy.length
           for (let i = 0; i < len; i++) {
             if (objEquals(spec, stockCopy[i].childProductSpec)) {
-              origin = stockCopy[i].childProductSpec
+              origin = stockCopy[i]
             }
           }
           this.childProductArray.push(origin || this.creatChildProduct(index))
