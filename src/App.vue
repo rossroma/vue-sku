@@ -1,16 +1,14 @@
 <template>
   <div id="app">
-    <router-view />
+    <SkuBox></SkuBox>
   </div>
 </template>
 
-<script>
+<script setup>
+import SkuBox from './components/sku.vue'
 
-export default {
-  name: 'app',
-  components: {
-  }
-}
+// This starter template is using Vue 3 experimental <script setup> SFCs
+// Check out https://github.com/vuejs/rfcs/blob/script-setup-2/active-rfcs/0000-script-setup.md
 </script>
 
 <style>
@@ -19,5 +17,8 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+}
+html, body{
+  padding:0;margin:0;
 }
 </style>
